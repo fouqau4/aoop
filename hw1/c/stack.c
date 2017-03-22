@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "stack.h"
-//#include "mtest.h"
+#include "mtest.h"
 
 void push(struct stack* this, int x)
 {
