@@ -13,5 +13,7 @@ main.o: main.c
 stack.o: stack.c
 	g++ -std=c++11 -c stack.c
 
+dep:
+	g++ -M stack.c main.c main2.c > depend
 clean:
-	rm -f *.o stack1 stack2
+	rm -f *.o stack1 stack2 depend

@@ -15,5 +15,7 @@ stack.o: mtest.o stack.c
 mtest.o: mtest.c
 	gcc -c -Wall mtest.c
 
+dep:
+	gcc -M stack.c mtest.c main.c main2.c > depend
 clean:
-	rm -f *.o stack1 stack2
+	rm -f *.o stack1 stack2 depend
