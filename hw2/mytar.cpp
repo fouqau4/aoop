@@ -1,101 +1,84 @@
 #include "mytar.h"
 
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <ctime>
 #include <cstdlib>
 
-using std::ifstream;
-using std::string;
 using std::ios;
-
 using std::endl;
 using std::cout;
 
-unsigned int parse_header( const struct TarHeader& tar_file );
-unsigned int parse_name_n_size( string& r,
-							    const struct TarHeader& tar_file );
-string parse_filemode( const char* filemode );
 const char* which_mode( char c );
-char which_type( char c );
 
 void list_content( const char* filename )
 {
 	ifstream tar( filename, ios::binary );
-	struct TarHeader tar_file;
+
+    class T tar_file;
 	unsigned int size, blocks;
 	while( !tar.eof() )
 	{
-		tar.read( (char*)&tar_file, sizeof( struct TarHeader ) );
-		if( tar_file.filename[0] == 0 )
-			continue;		
-		size = parse_header( tar_file );
+
+        tar_file.read_header( tar );
+		if( tar_file.get_filename()[0] == 0 )
+			continue;
+
+        tar_file.parse_header();
+        tar_file.show_info();
+
+		size = tar_file.get_filesize();
 		blocks = size / 512;
 		if( (size %= 512) > 0 )
 			blocks++;
 		tar.seekg( blocks*512, tar.cur );
+
 	}
 	tar.close();
 }
 
-unsigned int parse_header( const struct TarHeader& tar_file )
+void T::read_header( ifstream& i )
+{
+    i.read( (char*)&header,
+            sizeof( struct TarHeader ) );
+}
+
+void T::parse_header()
 {
 
-	string r = "";
-	unsigned int size;
+	info = "";
 		
-	r += which_type( tar_file.type );
-	r += parse_filemode( tar_file.filemode );
-	size = parse_name_n_size( r, tar_file );
-	r += " ";
-	time_t t;
-	sscanf( tar_file.mtime, "%lo", (unsigned long int*)&t);
-	struct tm *timeinfo = localtime(&t);
-	char arr[20];
-	strftime( arr, 20, "%Y-%m-%d %R", timeinfo );
-	r += arr;
-	r += " ";
-	r += tar_file.filename;
-	cout << r << endl;
-	return size;
+	info += which_type();
+	parse_filemode();
+    parse_name_n_size();
+    parse_time();
+	info += get_filename();
+
 }
 
-unsigned int parse_name_n_size( string& r, const struct TarHeader& tar_file )
+unsigned int T::get_filesize()
 {
-	unsigned nlen = r.length(), slen;
-
-	r += tar_file.username;	
-	r += "/"; 
-	r += tar_file.groupname;
-	nlen = r.length() - nlen;
-	
-	unsigned int size;
-	sscanf( tar_file.filesize, "%o", &size );
-	char fs[15];
-	sprintf( fs, "%u", size );
-	string fsize = fs;
-	slen = fsize.length();
-
-	for( int i = 0 ; i < 19 - nlen - slen ; i++ )
-		r += " ";
-
-	r += fsize;
-
-	return size;
+    sscanf( header.filesize, "%o", &this->filesize );
+    return this->filesize;
 }
 
-string parse_filemode( const char* filemode )
+const char* T::get_filename()
 {
-	string r = "";	
-	for( int i = 4 ; i < 7 ; i++ )
-		r += which_mode( filemode[i] );
-	return r + " ";
+    return header.filename;
 }
 
-char which_type( char c )
+const char* T::get_username()
 {
-	switch( c )
+    return header.username;
+}
+
+const char* T::get_groupname()
+{
+    return header.groupname;
+}
+
+char T::which_type()
+{
+	switch( header.type )
 	{
 	// Normal file
 	case 0:
@@ -131,6 +114,50 @@ char which_type( char c )
 	}
 }
 
+void T::parse_filemode()
+{
+	for( int i = 4 ; i < 7 ; i++ )
+		info += which_mode( header.filemode[i] );
+	info += " ";
+}
+
+void T::parse_name_n_size()
+{
+	unsigned nlen = this->info.length(), slen;
+
+	this->info += get_username();	
+	info += "/"; 
+	info += get_groupname();
+	nlen = info.length() - nlen;
+	
+	char fs[15];
+	sprintf( fs, "%u", get_filesize() );
+	string fsize = fs;
+	slen = fsize.length();
+
+	for( int i = 0 ; i < 19 - nlen - slen ; i++ )
+		info += " ";
+
+	info += fsize + " ";
+
+}
+
+void T::parse_time()
+{
+    time_t t;
+	sscanf( header.mtime, "%lo", (unsigned long int*)&t);
+	struct tm *timeinfo = localtime(&t);
+	char arr[20];
+	strftime( arr, 20, "%Y-%m-%d %R", timeinfo );
+    info += arr;
+    info += " ";
+}
+
+void T::show_info()
+{
+    cout << info << endl;
+}
+
 const char* which_mode( char c )
 {
 	switch( c )
@@ -152,5 +179,4 @@ const char* which_mode( char c )
 	default:
 		return "???";
 	}
-
 }

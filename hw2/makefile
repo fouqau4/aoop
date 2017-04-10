@@ -8,5 +8,5 @@ mytar.o: mytar.cpp
 	g++ -std=c++11 -c mytar.cpp
 
 clean:
-	rm -f *.o
+	rm -f *.o mytar
 
