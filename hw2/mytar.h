@@ -19,6 +19,8 @@ public:
     	filesize = -1;
 	}
 	void read_header( ifstream& i );	
+	int is_tar();
+	int is_padding();
 	void parse_header();
 	unsigned int get_filesize();
 	const char* get_filename();

@@ -1,6 +1,7 @@
 #include "mytar.h"
 
 #include <iostream>
+#include <cstring>
 #include <ctime>
 #include <cstdlib>
 
@@ -20,8 +21,14 @@ void list_content( const char* filename )
 	{
 
         tar_file.read_header( tar );
-		if( tar_file.get_filename()[0] == 0 )
+		if( tar_file.is_padding() == 0 )
 			continue;
+		if( tar_file.is_tar() != 0 )
+		{
+			cout << "Not a ustar file" << endl 
+				 << "File opening error." << endl;
+			break;
+		}
 
         tar_file.parse_header();
         tar_file.show_info();
@@ -34,6 +41,20 @@ void list_content( const char* filename )
 
 	}
 	tar.close();
+}
+
+int T::is_tar()
+{
+	string s = header.USTAR_id;
+	return s.compare( "ustar  " );
+}
+
+int T::is_padding()
+{
+	unsigned int s = sizeof( struct TarHeader );
+	char z[s];
+	memset( z, 0, s );
+	return memcmp( &header, z, s );
 }
 
 void T::read_header( ifstream& i )
@@ -145,7 +166,7 @@ void T::parse_name_n_size()
 void T::parse_time()
 {
     time_t t;
-	sscanf( header.mtime, "%lo", (unsigned long int*)&t);
+	t = strtol( header.mtime, NULL, 8 );
 	struct tm *timeinfo = localtime(&t);
 	char arr[20];
 	strftime( arr, 20, "%Y-%m-%d %R", timeinfo );
