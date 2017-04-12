@@ -11,8 +11,10 @@ using std::cout;
 
 const char* which_mode( char c );
 
-void list_content( const char* filename )
+void list_content( char* filename )
 {
+	if( filename[0] == '/' )
+		filename++; 
 	ifstream tar( filename, ios::binary );
 
     class T tar_file;

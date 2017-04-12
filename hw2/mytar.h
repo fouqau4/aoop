@@ -8,7 +8,7 @@
 using std::ifstream;
 using std::string;
 
-extern void list_content( const char* filename );
+extern void list_content( char* filename );
 
 class T
 {

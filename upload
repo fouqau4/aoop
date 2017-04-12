@@ -1,0 +1,3 @@
+#!/bin/bash
+A="/usr/bin/scp -r $1  `cat account`@`cat host`:~/$2"
+./e $A `cat password`
