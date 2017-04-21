@@ -39,8 +39,32 @@ double Complex::Arg()
 {
 	return atan( imag/real );
 }
+Complex Complex::operator++()
+{
+	this->real++;
+	return *this;
+}
+Complex Complex::operator++( int )
+{
+	Complex r = *this;
+	this->real++;
+	return r;
+}
+Complex Complex::operator--()
+{
+	this->real--;
+	return *this;
+}
+Complex Complex::operator--( int )
+{
+	Complex r = *this;
+	this->real--;
+	return r;
+}
+
+Complex::~Complex(){};
+
 Complex Polar( const double leng, const double arg )
-//Complex Polar( double leng, double arg )
 {
 	return Complex( leng*cos( arg ), leng*sin( arg ) );
 }
@@ -60,17 +84,48 @@ Complex operator+( const Complex& x, const Complex& y )
 {
 	return Complex( x.real+y.real, x.imag+y.imag );
 }
-
-Complex Complex::operator++()
+Complex operator-( const Complex& x, const Complex& y )
 {
-	this->real++;
-	return *this;
+	return Complex( x.real-y.real, x.imag-y.imag );
 }
-Complex Complex::operator++( int )
+Complex operator*( const Complex& x, const Complex& y )
 {
-	Complex r = *this;
-	this->real++;
-	return r;
+	return Complex( x.real*y.real-x.imag*y.imag, x.real*y.imag + x.imag*y.real );
+}
+Complex operator/( const Complex& x, const Complex& y )
+{
+	double denominator = y.real*y.real + y.imag*y.imag,
+			real = (x.real*y.real + x.imag*y.imag)/denominator,
+			imag = (x.imag*y.real - x.real*y.imag)/denominator;	
+	return Complex( real, imag );
+}
+Complex operator+=( Complex& x, const Complex& y )
+{
+	x = x+y;
+	return x;
+}
+Complex operator-=( Complex& x, const Complex& y )
+{
+	x = x-y;
+	return x;
+}
+Complex operator*=( Complex& x, const Complex& y )
+{
+	x = x*y;
+	return x;
+}
+Complex operator/=( Complex& x, const Complex& y )
+{
+	x = x/y;
+	return x;
+}
+bool operator==( const Complex& x, const Complex& y )
+{
+	return x.real == y.real && x.imag == y.imag;
+}
+bool operator!=( const Complex& x, const Complex& y )
+{
+	return !( x == y );
 }
 
 ostream& operator<<( ostream& o, const Complex& x )

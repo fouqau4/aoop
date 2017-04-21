@@ -1,6 +1,5 @@
 #include <iostream>
 #include "Complex.h"
-#include <cmath>
 
 using std::cout;
 using std::endl;
@@ -34,7 +33,6 @@ int main() {
 
     b = Polar(6.5, 8.1);
     cout << i++ << ": " << b << endl;
-	/*
 
     cout << i++ << ": " << a+b << endl;
     cout << i++ << ": " << a-b << endl;
@@ -59,6 +57,7 @@ int main() {
         cout << i++ << ": " << "OK" << endl;
     if(a != b)
         cout << i++ << ": " << "OK" << endl;
+	/*
 	*/
 	return 0;
 }

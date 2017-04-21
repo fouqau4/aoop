@@ -23,19 +23,17 @@ public:
 
     Complex operator++();
     Complex operator++(int);
-	/*
+	
     Complex operator--();
     Complex operator--(int);
 
     ~Complex();
-	*/
-    friend Complex Polar(const double leng, const double arg);
-	//friend Complex Polar(double leng, double arg);
+	
+    friend Complex Polar(const double leng, const double arg);	
     friend double Norm(const Complex& x);
     friend double Abs(const Complex& x);
     friend double Arg(const Complex& x);
     friend Complex operator+(const Complex& x, const Complex& y);
-	/*
     friend Complex operator-(const Complex& x, const Complex& y);
     friend Complex operator*(const Complex& x, const Complex& y);
     friend Complex operator/(const Complex& x, const Complex& y);
@@ -45,12 +43,14 @@ public:
     friend Complex operator/=(Complex& x, const Complex& y);
     friend bool operator==(const Complex& x, const Complex& y);
     friend bool operator!=(const Complex& x, const Complex& y);
-	*/
+	
     friend ostream& operator<<(ostream& o, const Complex& x);
 
 private:
     double real;
     double imag;
 };
+
+Complex Polar(const double leng, const double arg);
 
 #endif
