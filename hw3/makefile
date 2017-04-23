@@ -8,6 +8,6 @@ main.o: main.cpp
 Complex.o:Complex.cpp
 	g++ -std=c++11 -c Complex.cpp	
 dep:
-	g++ -M main.cpp Complex.cpp
+	g++ -M main.cpp Complex.cpp > depend
 clean:
 	rm -f *.o
