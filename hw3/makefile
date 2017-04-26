@@ -10,4 +10,4 @@ Complex.o:Complex.cpp
 dep:
 	g++ -M main.cpp Complex.cpp > depend
 clean:
-	rm -f *.o
+	rm -f *.o complex_test depend
