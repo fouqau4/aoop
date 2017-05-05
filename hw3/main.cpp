@@ -7,9 +7,8 @@ using std::endl;
 
 int main() {
     Complex a(77, 66.3);
-    Complex b(a);
+    Complex b = Complex(a);
     int i = 1;
-
     cout << i++ << ": (" << a.Real() << ',' << a.Imag() << ')' << endl;
     cout << i++ << ": " << b << endl;
     cout << i++ << ": " << Norm(b) << endl;

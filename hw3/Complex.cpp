@@ -55,12 +55,14 @@ Complex Complex::operator++( int )
 Complex Complex::operator--()
 {
 	this->real--;
+	this->imag--;
 	return *this;
 }
 Complex Complex::operator--( int )
 {
 	Complex r = *this;
 	this->real--;
+	this->imag--;
 	return r;
 }
 
