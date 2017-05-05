@@ -1,0 +1,21 @@
+TGT := my_scanner
+
+CC := g++
+CXXFLAGS := -std=c++11
+
+SRC := 	my_scanner.cpp \
+		Lexer.cpp \
+		Word.cpp \
+		Num.cpp \
+		Real.cpp \
+		Token.cpp \
+		Type.cpp
+OBJ := $(SRC:.cpp=.o)
+
+
+all: $(TGT)
+
+$(TGT): $(OBJ)
+
+clean:
+	rm -f $(TGT) *.o
