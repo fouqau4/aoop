@@ -23,6 +23,6 @@ $(TGT): $(OBJ)
 
 .PHONY: dep clean
 dep:
-	$(CC) -M main.cpp Lexer.cpp Word.cpp Num.cpp Real.cpp Token.cpp Type.cpp Tag.h > depend
+	$(CXX) -M $(SRC) > depend
 clean:
 	@rm -f $(OBJ) $(TGT) depend

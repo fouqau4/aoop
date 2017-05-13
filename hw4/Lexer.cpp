@@ -1,4 +1,5 @@
 #include "Lexer.h"
+//#define _show_free_msg_
 #include <cctype>
 
 using std::pair;
@@ -10,11 +11,11 @@ int Lexer::line = 1;
 
 Lexer::Lexer()
 {		
-	reserve( mm( new Word( "if"	, Tag::IF 	) ) );
-	reserve( mm( new Word( "else"	, Tag::ELSE 	) ) );
-	reserve( mm( new Word( "while"	, Tag::WHILE	) ) );
-	reserve( mm( new Word( "do"		, Tag::DO		) ) );
-	reserve( mm( new Word( "break"	, Tag::BREAK 	) ) );
+	reserve( mm( rsv, new Word( "if"	, Tag::IF 		) ) );
+	reserve( mm( rsv, new Word( "else"	, Tag::ELSE 	) ) );
+	reserve( mm( rsv, new Word( "while"	, Tag::WHILE	) ) );
+	reserve( mm( rsv, new Word( "do"	, Tag::DO		) ) );
+	reserve( mm( rsv, new Word( "break"	, Tag::BREAK 	) ) );
 	reserve( (Word*)&Word::True	 );
 	reserve( (Word*)&Word::False );
 	reserve( (Word*)&Type::Int	 );
@@ -25,16 +26,12 @@ Lexer::Lexer()
 
 Lexer::~Lexer()
 {
-	while( !collector.empty() )
-	{
-		//cout << "Free : " << collector.back()->toString() <<endl;
-		delete collector.back();
-		collector.pop_back();
-	}
+	free_all();
 }
 
 Token* Lexer::scan()
 {
+	free_collector( collector );
 	// skip white space
 	for(;;readch())
 	{
@@ -52,32 +49,32 @@ Token* Lexer::scan()
 		if( readch('&') )
 			return ( Token* )&Word::And;
 		else
-			return mm( new Token('&') );
+			return mm( collector, new Token('&') );
 	case '|':
 		if (readch('|'))
 			return ( Token* )&Word::Or;
 		else
-			return mm( new Token('|') );
+			return mm( collector, new Token('|') );
 	case '=':
 		if (readch('='))
 			return ( Token* )&Word::eq;
 		else
-			return mm( new Token('=') );
+			return mm( collector, new Token('=') );
 	case '!':
 		if (readch('='))
 			return ( Token* )&Word::ne;
 		else
-			return mm( new Token('!') );
+			return mm( collector, new Token('!') );
 	case '<':
 		if (readch('='))
 			return ( Token* )&Word::le;
 		else
-			return mm( new Token('<') );
+			return mm( collector, new Token('<') );
 	case '>':
 		if (readch('='))
 			return ( Token* )&Word::ge;
 		else
-			return mm( new Token('>') );
+			return mm( collector, new Token('>') );
 	}
 	
 	if( isdigit( peek ) )
@@ -89,7 +86,7 @@ Token* Lexer::scan()
 			readch();
 		}while( isdigit( peek ) );
 		if( peek != '.' )
-			return mm( new Num( v ) );
+			return mm( collector, new Num( v ) );
 		float x = v;
 		float d = 10;
 		for(;;)
@@ -100,7 +97,7 @@ Token* Lexer::scan()
 			x = x + ( peek - '0' ) / d;
 			d *= 10;
 		}
-		return mm( new Real( x ) );
+		return mm( collector, new Real( x ) );
 	}
 	
 	if( isalpha( peek ) )
@@ -111,40 +108,59 @@ Token* Lexer::scan()
 			s += peek;
 			readch();
 		}while( isalpha( peek ) || isdigit( peek ) );
-		
-		if( words[s] != nullptr )
+			
+		if( words.find(s) != words.end() )
 			return words[s];
-		Word *w = mm( new Word( s, Tag::ID ) );
-		words.insert( pair<string,Word*>( s, w ) );
+		Word *w = mm( rsv, new Word( s, Tag::ID ) );
+		reserve( w );		
 		return w;
 	}
 	
-	Token *tok = mm( new Token( peek ) );
+	Token *tok = mm( collector, new Token( peek ) );
 	peek = ' ';
 	return tok;
 }
 
-
-Word* Lexer::mm( Word* w )
+void Lexer::free_all()
 {
-	collector.push_back( w );
+	free_collector( collector );
+	free_collector( rsv );
+}
+void Lexer::free_collector( vector<Token*>& v )
+{
+	while( !v.empty() )
+	{
+		if( v.back() != nullptr )
+		{
+			#ifdef _show_free_msg_
+			cout << "\033[1;31;m\t\tFree : " << v.back()->toString() << "\033[0m" << endl;
+			#endif
+			delete v.back();
+			v.back() = nullptr;
+			v.pop_back();			
+		}
+	}
+}
+Word* Lexer::mm( vector<Token*>& v, Word* w )
+{
+	v.push_back( w );
 	return w;
 }
 
-Token* Lexer::mm( Token* t )
+Token* Lexer::mm( vector<Token*>& v, Token* t )
 {
-	collector.push_back( t );
+	v.push_back( t );
 	return t;
 }
 	
-Num* Lexer::mm( Num* t )
+Num* Lexer::mm( vector<Token*>& v, Num* t )
 {
-	collector.push_back( t );
+	v.push_back( t );
 	return t;
 }
-Real* Lexer::mm( Real* t )
+Real* Lexer::mm( vector<Token*>& v, Real* t )
 {
-	collector.push_back( t );
+	v.push_back( t );
 	return t;
 }
 	

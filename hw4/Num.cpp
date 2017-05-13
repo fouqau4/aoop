@@ -4,5 +4,5 @@ using std::to_string;
 
 string Num::toString()
 {		
-	return to_string(value) + "\t(NUM)";
+	return to_string(value) + "\t\t(NUM)";
 }

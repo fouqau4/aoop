@@ -4,5 +4,5 @@ using std::to_string;
 
 string Real::toString()
 {		
-	return to_string(value) + "\t(REAL)";
+	return to_string(value) + "\t\t(REAL)";
 }

@@ -1,6 +1,7 @@
 #ifndef _my_lexer_in_cpp_
 #define _my_lexer_in_cpp_
 
+
 #include "Token.h"
 #include "Word.h"
 #include "Type.h"
@@ -30,12 +31,14 @@ private:
 	map<string,Word*> words;
 	
 	// memory management
-	vector<Token*> collector;
+	vector<Token*> collector, rsv;
 	
-	Word* mm( Word* w );
-	Token* mm( Token* t );
-	Num* mm( Num* t );
-	Real* mm( Real* t );	
+	Word* mm( vector<Token*>& v, Word* w );
+	Token* mm( vector<Token*>& v, Token* t );
+	Num* mm( vector<Token*>& v, Num* t );
+	Real* mm( vector<Token*>& v, Real* t );
+	void free_all();
+	void free_collector( vector<Token*>& v );
 
 	void readch();
 	bool readch( char c );	

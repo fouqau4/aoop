@@ -86,7 +86,7 @@ string Word::toString()
 		break;
 	}
 	
-	return lexeme + "\t(" + type + ")";
+	return lexeme + "\t\t(" + type + ")";
 }
 
 bool Word::operator==( Word w )

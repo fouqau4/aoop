@@ -2,7 +2,7 @@
 
 string Token::toString()
 {
-	return string( 1, (char)tag ) + "\t(" + (char)tag + ")";
+	return string( 1, (char)tag ) + "\t\t(" + (char)tag + ")";
 }
 	
 bool Token::operator==( Token t )
